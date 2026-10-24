@@ -1,0 +1,34 @@
+name: Auto Process & Update Playlist Logos
+
+on:
+  workflow_dispatch: # मैन्युअल रूप से GitHub टैब से चलाने के लिए
+  schedule:
+    - cron: '0 */6 * every 6 hours' # हर 6 घंटे में ऑटोमैटिक रन होगा (आप चाहें तो बदल सकते हैं)
+
+jobs:
+  update-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          pip install requests Pillow
+
+      - name: Run Logo Processor
+        run: |
+          python process_images.py
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "GitHub Action Bot"
+          git config --global user.email "bot@github.com"
+          git add .
+          git commit -m "Auto-update and square logo images" || echo "No changes to commit"
+          git push
