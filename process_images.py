@@ -4,7 +4,7 @@ import requests
 from PIL import Image
 from io import BytesIO
 
-PLAYLIST_URL = "https://royal-bird-6a0a.poonamchouhan076.workers.dev/"
+PLAYLIST_URL = "https://prtstream.vercel.app/api/prt"
 OUTPUT_DIR = "logos"
 
 # लोगो सेव करने के लिए फोल्डर बनाएँ
