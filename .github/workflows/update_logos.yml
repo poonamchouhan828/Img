@@ -1,15 +1,17 @@
-name: Auto Process & Update Playlist Logos
+name: Auto Process M3U Logos
 
 on:
-  workflow_dispatch: # मैन्युअल रूप से GitHub टैब से चलाने के लिए
+  workflow_dispatch:
   schedule:
-    - cron: '0 */6 * every 6 hours' # हर 6 घंटे में ऑटोमैटिक रन होगा (आप चाहें तो बदल सकते हैं)
+    - cron: '0 */6 * * *'
 
 jobs:
-  update-images:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - name: Checkout Repository
+      - name: Checkout Repo
         uses: actions/checkout@v3
 
       - name: Set up Python
@@ -17,18 +19,20 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Dependencies
-        run: |
-          pip install requests Pillow
+      - name: Install dependencies
+        run: pip install requests Pillow
 
-      - name: Run Logo Processor
-        run: |
-          python process_images.py
+      - name: Run Script
+        run: python process_images.py
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
 
-      - name: Commit and Push Changes
+      - name: Commit and Push
         run: |
           git config --global user.name "GitHub Action Bot"
           git config --global user.email "bot@github.com"
-          git add .
-          git commit -m "Auto-update and square logo images" || echo "No changes to commit"
+          git add playlist.m3u logos/
+          git commit -m "Auto-update square logos and playlist" || echo "No changes"
           git push
+          
